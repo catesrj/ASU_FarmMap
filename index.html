@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset=utf-8 />
+	<title>Map Template Browser Title</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.css" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+	<link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet">
+
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background: "whitesmoke";
+			font-family: "Noto Sans", sans-serif;
+			color: #3d3d3d;
+		}
+
+		h1 {
+			position: absolute;
+			margin-top: 0;
+			top: 10px;
+			left: 45px;
+			font-size: 2em;
+			font-family: "Lora", serif;
+			letter-spacing: .04em;
+			padding: 10px 15px;
+			background: rgba(256, 256, 256);
+			border: 1px solid grey;
+			border-radius: 3px;
+			z-index: 800;
+		}
+
+		h2 {
+			font-family: "Lora", serif;
+			letter-spacing: .04em;
+		}
+
+		#map {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 100%;
+		}
+
+		section {
+			position: absolute;
+			bottom: 0;
+			left: 10px;
+			width: 280px;
+			margin: 20px auto;
+			padding: 0 15px;
+			background: rgba(256, 256, 256);
+			border: 1px solid grey;
+			border-radius: 3px;
+			z-index: 800;
+		}
+
+		p {
+			font-size: .9em;
+			line-height: 1.5em;
+		}
+
+		a {
+			color: #005daa;
+			text-decoration: none;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
+	</style>
+</head>
+
+<body>
+
+	<h1>Directions from Appalachian State University Main Campus to the ASU Sustainable Development Farm.</h1>
+
+	<div id='map'></div>
+
+	<section>
+		<h2>About this Map</h2>
+
+		<p>Throughout the Sustainable Development Teaching and Research Farm,  sustainable technology is integrated amongst sustainable agricultural methods practiced in the fields and forests. Multiple departments utilize this community space and work together to preserve, restore and manage this land sustainably. Several years ago, the Appropriate Technology program and the ASU Renewable Energy Initiative installed photovoltaic and thermal solar panels on the resident farm manager’s house, making it almost completely solar-powered. Most recently, this same collaboration along with ASU Dining Services has been responsible for building a new high-performance greenhouse at the farm. We have many collaborations with many other departments and programs across the campus including, Nutrition, Nursing, Art, Honors College, ROTC, STBE, and others.</p>
+
+
+		<p>Text provided by <a href="https://sd.appstate.edu/sustainable-food-systems#:~:text=The%20App%20State%20farm%20is,land%2C%20biodiversity%2C%20and%20culture.&text=See%20Appalachian%20Today's%20feature%20on,articles%2C%20photos%2C%20and%20videos.">Appalachian State University</a></p>
+		<p>Map authored by me, Reilly Cates</p>
+
+	</section>
+
+	<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+
+    <script src="data/route.js"></script>
+
+	<script>
+
+//options to be used when creating the map
+		var options = {
+			center: [36.261042, -81.574860
+],
+			zoom: 12
+		}
+
+        console.log(data)
+
+//creation of the Leaflet map
+		var map = L.map('map', options);
+
+//request to load basemap
+        var Stadia_AlidadeSatellite = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.{ext}', {
+	    maxZoom: 20,
+	    attribution: '&copy; CNES, Distribution Airbus DS, © Airbus DS, © PlanetObserver (Contains Copernicus Data) | &copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	    ext: 'jpg'
+    }).addTo(map);
+
+       // var message = 'Sustainable Development Farm!'
+
+        //L.marker(map.getCenter())
+            //.bindTooltip(message)
+           // .addTo(map)
+           // .openTooltip();
+
+        var myRoute = L.geoJson(data, {
+            filter: function(feature) {
+                return feature.geometry.type === "LineString";
+            },
+            style: function(feature) {
+                return {
+                    color: "#005DAA",
+                    weight: 6,
+                    opacity: 0.8,
+                    dashArray: "5, 7"
+                };
+            }
+        }).addTo(map);
+
+        var myStops = L.geoJson(data, {
+        
+            filter : function(feature) {
+            if(feature.geometry.type == "Point") {
+                return feature;
+            }
+        },
+        onEachFeature : function(feature, layer) {
+            layer.bindTooltip(feature.properties['name']);
+        }
+        }).addTo(map);
+
+        map.fitBounds(myRoute.getBounds());
+
+
+
+	</script>
+
+</body>
+
+</html>
